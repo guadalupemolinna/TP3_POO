@@ -1,0 +1,173 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class Continente {
+    private String nombre;
+    private List<Pais> paises;
+
+    public Continente(String nombre) {
+        this.nombre = nombre;
+        this.paises = new ArrayList<>();
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public List<Pais> getPaises() {
+        return paises;
+    }
+
+    public void agregarPais(Pais pais) {
+        paises.add(pais);
+    }
+
+    @Override
+    public String toString() {
+        return "Continente: " + nombre;
+    }
+}
+
+
+
+
+public class Provincia {
+    private String nombre;
+    private int habitantes;
+
+    public Provincia(String nombre, int habitantes) {
+        this.nombre = nombre;
+        this.habitantes = habitantes;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getHabitantes() {
+        return habitantes;
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " - Habitantes: " + habitantes;
+    }
+}
+
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Pais {
+    private String nombre;
+    private double superficie;
+    private List<Provincia> provincias;
+
+    public Pais(String nombre, double superficie) {
+        this.nombre = nombre;
+        this.superficie = superficie;
+        this.provincias = new ArrayList<>();
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public double getSuperficie() {
+        return superficie;
+    }
+
+    public List<Provincia> getProvincias() {
+        return provincias;
+    }
+
+    public void agregarProvincia(Provincia provincia) {
+        provincias.add(provincia);
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " - Superficie: " + superficie;
+    }
+}
+
+
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class Gestion {
+    private List<Continente> continentes;
+
+    public Gestion() {
+        continentes = new ArrayList<>();
+    }
+
+    // Seeder (datos de prueba)
+    public void cargarDatos() {
+        Continente america = new Continente("América");
+
+        Pais argentina = new Pais("Argentina", 2780000);
+        argentina.agregarProvincia(new Provincia("Entre Ríos", 1300000));
+        argentina.agregarProvincia(new Provincia("Buenos Aires", 17000000));
+
+        Pais brasil = new Pais("Brasil", 8516000);
+        brasil.agregarProvincia(new Provincia("São Paulo", 45000000));
+
+        america.agregarPais(argentina);
+        america.agregarPais(brasil);
+
+        continentes.add(america);
+    }
+
+    // Listar países por continente
+    public void listarPaises() {
+        for (Continente c : continentes) {
+            System.out.println(c);
+            for (Pais p : c.getPaises()) {
+                System.out.println("  - " + p);
+            }
+        }
+    }
+
+    // Listar provincias por país
+    public void listarProvincias(String nombrePais) {
+        for (Continente c : continentes) {
+            for (Pais p : c.getPaises()) {
+                if (p.getNombre().equalsIgnoreCase(nombrePais)) {
+                    System.out.println("Provincias de " + p.getNombre());
+                    for (Provincia pr : p.getProvincias()) {
+                        System.out.println("  - " + pr);
+                    }
+                }
+            }
+        }
+    }
+
+    // Ordenar países por superficie
+    public void ordenarPaisesPorSuperficie() {
+        for (Continente c : continentes) {
+            c.getPaises().sort(Comparator.comparingDouble(Pais::getSuperficie));
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Gestion gestion = new Gestion();
+
+        gestion.cargarDatos();
+
+        System.out.println("=== Países ===");
+        gestion.listarPaises();
+
+        System.out.println("\n=== Provincias de Argentina ===");
+        gestion.listarProvincias("Argentina");
+
+        System.out.println("\n=== Países ordenados por superficie ===");
+        gestion.ordenarPaisesPorSuperficie();
+        gestion.listarPaises();
+    }
+}
