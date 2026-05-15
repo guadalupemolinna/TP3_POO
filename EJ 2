@@ -1,0 +1,158 @@
+SALARIO_MINIMO = 357_800.0  
+
+
+ ═════════════════════════════════════════════════════════
+  CAPA DE DOMINIO  —  sin print(), sin input()
+═════════════════════════════════════════════════════════
+
+class Empleado:
+    
+
+    def __init__(self, nombre: str, dni: str, sueldo: float):
+        self.nombre = nombre
+        self.dni = dni
+        self.sueldo = sueldo          # Invoca el setter
+
+    @property
+    def sueldo(self) -> float:
+        return self._sueldo
+
+    @sueldo.setter
+    def sueldo(self, valor: float):
+        """Regla de negocio: asigna salario mínimo si el valor es menor."""
+        self._sueldo = valor if valor >= SALARIO_MINIMO else SALARIO_MINIMO
+
+    def sueldo_fue_corregido(self, valor_original: float) -> bool:
+        """Permite que Main sepa si el sueldo fue ajustado, sin que Empleado imprima nada."""
+        return valor_original < SALARIO_MINIMO
+
+    def __str__(self) -> str:
+        return f"{self.nombre} (DNI: {self.dni}) — Sueldo: ${self._sueldo:,.2f}"
+
+
+class Empresa:
+    """Gestión de empleados. Sin interacción con el usuario."""
+
+    def __init__(self):
+        self._empleados: list[Empleado] = []
+
+    def registrar(self, empleado: Empleado) -> bool:
+        """Retorna True si se registró, False si el DNI ya existe."""
+        for e in self._empleados:
+            if e.dni == empleado.dni:
+                return False
+        self._empleados.append(empleado)
+        return True
+
+    def empleado_mayor_sueldo(self) -> Empleado | None:
+        """Devuelve el objeto Empleado con el mayor sueldo (no lo imprime)."""
+        if not self._empleados:
+            return None
+        return max(self._empleados, key=lambda e: e.sueldo)
+
+    def sueldo_promedio(self) -> float:
+        """Retorna el sueldo promedio o 0.0 si no hay empleados."""
+        if not self._empleados:
+            return 0.0
+        return sum(e.sueldo for e in self._empleados) / len(self._empleados)
+
+    def listar(self) -> list[Empleado]:
+        """Devuelve la lista de empleados para que Main la muestre."""
+        return list(self._empleados)
+
+    def cantidad(self) -> int:
+        return len(self._empleados)
+
+
+# ══════════════════════════════════════════════════════════
+#  CAPA DE INTERFAZ  —  toda interacción con el usuario
+# ══════════════════════════════════════════════════════════
+
+def leer_float(mensaje: str) -> float:
+    while True:
+        try:
+            return float(input(mensaje).replace(",", "."))
+        except ValueError:
+            print("  Ingrese un número válido.")
+
+
+def leer_texto(mensaje: str) -> str:
+    while True:
+        valor = input(mensaje).strip()
+        if valor:
+            return valor
+        print("  El campo no puede estar vacío.")
+
+
+def mostrar_menu() -> str:
+    print("\n" + "═" * 45)
+    print("  GESTIÓN DE EMPLEADOS")
+    print("═" * 45)
+    print("  1. Registrar empleado")
+    print("  2. Ver todos los empleados")
+    print("  3. Empleado con mayor sueldo")
+    print("  4. Sueldo promedio")
+    print("  5. Salir")
+    print("═" * 45)
+    return input("  Opción: ").strip()
+
+
+def main():
+    empresa = Empresa()
+
+    while True:
+        opcion = mostrar_menu()
+
+        if opcion == "1":
+            print("\n-- Registrar nuevo empleado --")
+            nombre = leer_texto("  Nombre: ")
+            dni    = leer_texto("  DNI: ")
+            sueldo = leer_float("  Sueldo: $")
+
+            emp = Empleado(nombre, dni, sueldo)
+
+            # Main evalúa el resultado y decide qué mostrar
+            if emp.sueldo_fue_corregido(sueldo):
+                print(f"  [Aviso] Sueldo inválido (${sueldo:,.2f}). "
+                      f"Se asigna el mínimo: ${SALARIO_MINIMO:,.2f}")
+
+            if empresa.registrar(emp):
+                print(f"  Empleado '{emp.nombre}' registrado correctamente.")
+            else:
+                print(f"  [Error] Ya existe un empleado con DNI {dni}.")
+
+        elif opcion == "2":
+            lista = empresa.listar()
+            print(f"\n-- Empleados registrados ({empresa.cantidad()}) --")
+            if lista:
+                for i, e in enumerate(lista, 1):
+                    print(f"  {i}. {e}")
+            else:
+                print("  No hay empleados registrados.")
+
+        elif opcion == "3":
+            top = empresa.empleado_mayor_sueldo()
+            if top:
+                print(f"\n-- Empleado con mayor sueldo --\n  {top}")
+            else:
+                print("\n  No hay empleados registrados.")
+
+        elif opcion == "4":
+            promedio = empresa.sueldo_promedio()
+            if promedio:
+                print(f"\n  Sueldo promedio: ${promedio:,.2f}")
+            else:
+                print("\n  No hay empleados registrados.")
+
+        elif opcion == "5":
+            print("\n  ¡Hasta luego!\n")
+            break
+
+        else:
+            print("  Opción no válida. Intente de nuevo.")
+
+
+if __name__ == "__main__":
+    main()
+
+
