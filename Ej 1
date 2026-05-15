@@ -1,0 +1,80 @@
+public class Entero {
+    private int numero;
+
+    public Entero(int numero) {
+        this.numero = numero;
+    }
+
+    public int getNumero() {
+        return numero; 
+    }
+   
+ public void setNumero(int numero { 
+        this.numero = numero;
+ }
+
+    // Calcula el cuadrado de n
+    public long cuadrado() {
+        return (long) numero * numero; 
+    }
+   
+    // Método par 
+    public boolean esPar() {
+        return numero % 2 == 0;
+    }
+   
+    // Método impar 
+    public boolean esImpar() {
+        return numero % 2 != 0;
+    }
+    
+    // Método factorial
+    public long factorial() {
+        long resultado = 1;
+        for (int i = 1; i <= numero; i++) {
+            resultado *= i;
+        }
+        return resultado;
+    }
+
+    // Método primo
+    public boolean esPrimo() {
+        if (numero <= 1) {
+            return false;
+        }
+        for (int i = 2; i <= numero / 2; i++) {
+            if (numero % i == 0) {
+                return false;
+            }
+        }
+       return true;
+    }
+}
+
+
+Clase Main
+import java.until.Scanner;
+
+public class MainEntero {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print(“Ingrese un número entero: ”);
+        int valor = scanner.nextInt();
+
+        Entero miEntero = new Entero(valor);
+
+        System.out.println(“\n--- Resultados ---");
+        System.out.println(“Número ingresado: ” + miEntero.getNumero());
+        System.out.println(“El cuadrado es: ” + miEntero.cuadrado());
+        System.out.println(“¿Es par?: ” + (miEntero.esPar() ? “Si” : “No”));
+        System.out.println(“¿Es impar?: ” + (miEntero.esImpar() ? “Si” : “No”));
+        System.out.println(“El factorial es: ” + (miEntero.factorial());
+        System.out.println(“¿Es número primo?: ” + (miEntero.esPrimo() ? “Si” : “No”));
+
+       scanner.close();
+    }
+}
+
+
+
